@@ -1,0 +1,2 @@
+E:\Palmax\OpenGL_Learn_MrFu\x64\Debug\OpenGL_Learn.exe
+E:\Palmax\OpenGL_Learn_MrFu\x64\Debug\OpenGL_Learn.pdb
