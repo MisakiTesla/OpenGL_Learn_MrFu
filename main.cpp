@@ -3,6 +3,15 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
 
+
+void processInput(GLFWwindow* window)
+{
+	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
+	{
+		glfwSetWindowShouldClose(window, true);
+	}
+}
+
 int main(int argc, char* argv[])
 {
 	glfwInit();
@@ -34,14 +43,23 @@ int main(int argc, char* argv[])
 
 	glViewport(0, 0, 800, 600);
 
+	//render loop
 	while (!glfwWindowShouldClose(window))
 	{
-		glClearColor(1.0, 0, 0, 1.0);
-		glClear(GL_COLOR_BUFFER_BIT);
-		glfwSwapBuffers(window);
+		//在下一帧开始时处理输入
+		processInput(window);
+
+		//render commonder...
+		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+		glClear(GL_COLOR_BUFFER_BIT);//COLOR_BUFFER:显示到屏幕上的buffer
+
+		//call event ，交换Buffer
 		glfwPollEvents();
+		glfwSwapBuffers(window);
+		
 	}
 
 	glfwTerminate();
 	return 0;
 }
+
