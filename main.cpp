@@ -2,30 +2,42 @@
 #define GLEW_STATIC
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>
-#include "Test.h"
 
 using namespace std;
 
 float vertices[] = {
-	-0.5f, -0.5f, 0.0f,
-	0.5f, -0.5f, 0.0f,
-	0.0f,  0.5f, 0.0f,
-	0.5f, -0.5f, 0.0f,
-	0.0f, 0.5f, 0.0f,
-	0.8f,0.8f,0.0f
+	-0.5f, -0.5f, 0.0f,//0
+	0.5f, -0.5f, 0.0f,//1
+	0.0f,  0.5f, 0.0f,//2
+	//0.5f, -0.5f, 0.0f,
+	//0.0f, 0.5f, 0.0f,
+	0.8f,0.8f,0.0f//3
+};
+//0,1,2  2,1,3
+
+//EBO
+unsigned int indices[] = {
+	0, 1, 2, // ç¬¬ä¸€ä¸ªä¸‰è§’å½¢
+	2, 1, 3  // ç¬¬äºŒä¸ªä¸‰è§’å½¢
 };
 
 const char* vertexShaderSource =
 "#version 330 core                                               \n"
-"layout(location = 0) in vec3 aPos;                     \n"
-"void main() {	\n"
-"		gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0);}\n";
+"layout(location = 0) in vec3 aPos;					        \n"
+"out vec4 vertexColor;                                           \n"
+"void main() {														\n"
+"		gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0); \n"//æœ€åä¸€ä½é½æ¬¡åæ ‡ -> 1-æ ‡é‡ï¼Œ0-å‘é‡
+"		vertexColor = vec4(1.0,0,0,1.0);                           \n"
+"}																			\n";
 
 const char* fragmentShaderSource =
-"#version 330 core\n"
-"out vec4 FragColor;\n"
-"void main(){\n"
-"    FragColor = vec4(1.0f, 0.5f, 0.2f, 1.0f);}\n";
+"#version 330 core										\n"
+"out vec4 FragColor;										\n"
+"in vec4 vertexColor;										\n"
+"uniform vec4 ourColor;										\n"
+"void main(){													\n"
+"    FragColor = ourColor;							\n"
+"}																	\n";
 
 void processInput(GLFWwindow* window)
 {
@@ -90,21 +102,30 @@ int main(int argc, char* argv[])
 
 	glViewport(0, 0, 800, 600);
 
-	//±³ÃæÌŞ³ı
+	//èƒŒé¢å‰”é™¤
 	glEnable(GL_CULL_FACE);
-	glCullFace(GL_FRONT);//ÕıÃæ GL_FRONT
+	glCullFace(GL_BACK);//æ­£é¢ GL_FRONT
+	//çº¿æ¡†æ¨¡å¼
+	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
-	//ÕæÕıÓÃ·¨
+	//çœŸæ­£ç”¨æ³•
 	//unsigned int VAO[10];
 	//glGenVertexArrays(1, VAO);
 	unsigned int VAO;
 	glGenVertexArrays(1, &VAO);
 	glBindVertexArray(VAO);
-
+	//é»˜è®¤é€†æ—¶é’ˆç»˜åˆ¶é¡¶ç‚¹
 	unsigned int VBO;
 	glGenBuffers(1, &VBO);
+	cout << VBO << endl;
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+
+	unsigned int EBO;
+	glGenBuffers(1, &EBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
 
 	unsigned int vertexShader;
 	vertexShader = glCreateShader(GL_VERTEX_SHADER);
@@ -128,19 +149,28 @@ int main(int argc, char* argv[])
 	//render loop
 	while (!glfwWindowShouldClose(window))
 	{
-		//ÔÚÏÂÒ»Ö¡¿ªÊ¼Ê±´¦ÀíÊäÈë
+		//åœ¨ä¸‹ä¸€å¸§å¼€å§‹æ—¶å¤„ç†è¾“å…¥
 		processInput(window);
 
 		//render commonder...
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);//COLOR_BUFFER:ÏÔÊ¾µ½ÆÁÄ»ÉÏµÄbuffer
+		glClear(GL_COLOR_BUFFER_BIT);//COLOR_BUFFER:æ˜¾ç¤ºåˆ°å±å¹•ä¸Šçš„buffer
 
 		glBindVertexArray(VAO);
+		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
+
+		float timeValue = glfwGetTime();
+		float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
+		int vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
+
 		glUseProgram(shaderProgram);
-		glDrawArrays(GL_TRIANGLES, 0, 6);
+		glUniform4f(vertexColorLocation, 0, greenValue, 0, 1.0f);
+
+		//glDrawArrays(GL_TRIANGLES, 0, 6);
+		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 
-		//call event £¬½»»»Buffer
+		//call event ï¼Œäº¤æ¢Buffer
 		glfwPollEvents();
 		glfwSwapBuffers(window);
 		
