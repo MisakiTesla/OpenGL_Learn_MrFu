@@ -6,12 +6,13 @@
 using namespace std;
 
 float vertices[] = {
-	-0.5f, -0.5f, 0.0f,//0
-	0.5f, -0.5f, 0.0f,//1
-	0.0f,  0.5f, 0.0f,//2
+	//位置				//颜色
+	-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,//0
+	0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,//1
+	0.0f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f,//2
 	//0.5f, -0.5f, 0.0f,
 	//0.0f, 0.5f, 0.0f,
-	0.8f,0.8f,0.0f//3
+	0.8f,0.8f,0.0f, 1.0f, 0, 1.0f//3
 };
 //0,1,2  2,1,3
 
@@ -24,10 +25,11 @@ unsigned int indices[] = {
 const char* vertexShaderSource =
 "#version 330 core                                               \n"
 "layout(location = 0) in vec3 aPos;					        \n"
+"layout(location = 1) in vec3 aColor;					    \n"
 "out vec4 vertexColor;                                           \n"
 "void main() {														\n"
 "		gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0); \n"//最后一位齐次坐标 -> 1-标量，0-向量
-"		vertexColor = vec4(1.0,0,0,1.0);                           \n"
+"		vertexColor = vec4(aColor.x , aColor.y, aColor.z, 1.0);                           \n"
 "}																			\n";
 
 const char* fragmentShaderSource =
@@ -36,7 +38,7 @@ const char* fragmentShaderSource =
 "in vec4 vertexColor;										\n"
 "uniform vec4 ourColor;										\n"
 "void main(){													\n"
-"    FragColor = ourColor;							\n"
+"    FragColor = vertexColor;							\n"
 "}																	\n";
 
 void processInput(GLFWwindow* window)
@@ -143,8 +145,12 @@ int main(int argc, char* argv[])
 	glAttachShader(shaderProgram, fragmentShader);
 	glLinkProgram(shaderProgram);
 
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 3 * sizeof(float), (void*)0);
+	//位置
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
+	//颜色
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*) (3*sizeof(float)));
+	glEnableVertexAttribArray(1);
 
 	//render loop
 	while (!glfwWindowShouldClose(window))
