@@ -1,7 +1,8 @@
 #include <iostream>
 #define GLEW_STATIC
 #include <GL/glew.h>
-#include <GLFW/glfw3.h>
+#include <GLFW/glfw3.h>//<xxx> -> 系统库
+#include "Shader.h"//”xxx“ -> 自定义库
 
 using namespace std;
 
@@ -22,25 +23,6 @@ unsigned int indices[] = {
 	2, 1, 3  // 第二个三角形
 };
 
-const char* vertexShaderSource =
-"#version 330 core                                               \n"
-"layout(location = 0) in vec3 aPos;					        \n"
-"layout(location = 1) in vec3 aColor;					    \n"
-"out vec4 vertexColor;                                           \n"
-"void main() {														\n"
-"		gl_Position = vec4(aPos.x, aPos.y, aPos.z, 1.0); \n"//最后一位齐次坐标 -> 1-标量，0-向量
-"		vertexColor = vec4(aColor.x , aColor.y, aColor.z, 1.0);                           \n"
-"}																			\n";
-
-const char* fragmentShaderSource =
-"#version 330 core										\n"
-"out vec4 FragColor;										\n"
-"in vec4 vertexColor;										\n"
-"uniform vec4 ourColor;										\n"
-"void main(){													\n"
-"    FragColor = vertexColor;							\n"
-"}																	\n";
-
 void processInput(GLFWwindow* window)
 {
 	if (glfwGetKey(window, GLFW_KEY_ESCAPE) == GLFW_PRESS)
@@ -51,6 +33,7 @@ void processInput(GLFWwindow* window)
 
 int main(int argc, char* argv[])
 {
+
 	int index = 1;
 	int index1 = 2;
 	int* i = &index;
@@ -110,6 +93,13 @@ int main(int argc, char* argv[])
 	//线框模式
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
+	//栈
+	//Shader testShader = Shader("vertexSource.txt", "fragmentSource.txt");
+	//testShader.test();
+	//new -> 堆
+	Shader* myShader = new Shader("vertexSource.txt", "fragmentSource.txt");
+	//testShader->test();
+
 	//真正用法
 	//unsigned int VAO[10];
 	//glGenVertexArrays(1, VAO);
@@ -127,23 +117,6 @@ int main(int argc, char* argv[])
 	glGenBuffers(1, &EBO);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
-
-
-	unsigned int vertexShader;
-	vertexShader = glCreateShader(GL_VERTEX_SHADER);
-	glShaderSource(vertexShader, 1, &vertexShaderSource, NULL);
-	glCompileShader(vertexShader);
-
-	unsigned int fragmentShader;
-	fragmentShader = glCreateShader(GL_FRAGMENT_SHADER);
-	glShaderSource(fragmentShader, 1, &fragmentShaderSource, NULL);
-	glCompileShader(fragmentShader);
-
-	unsigned int shaderProgram;
-	shaderProgram = glCreateProgram();
-	glAttachShader(shaderProgram, vertexShader);
-	glAttachShader(shaderProgram, fragmentShader);
-	glLinkProgram(shaderProgram);
 
 	//位置
 	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
@@ -165,14 +138,8 @@ int main(int argc, char* argv[])
 		glBindVertexArray(VAO);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 
-		float timeValue = glfwGetTime();
-		float greenValue = (sin(timeValue) / 2.0f) + 0.5f;
-		int vertexColorLocation = glGetUniformLocation(shaderProgram, "ourColor");
+		myShader->use();
 
-		glUseProgram(shaderProgram);
-		glUniform4f(vertexColorLocation, 0, greenValue, 0, 1.0f);
-
-		//glDrawArrays(GL_TRIANGLES, 0, 6);
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 
