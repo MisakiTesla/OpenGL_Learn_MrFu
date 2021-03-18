@@ -4,23 +4,24 @@
 #include <GLFW/glfw3.h>//<xxx> -> 系统库
 #include "Shader.h"//”xxx“ -> 自定义库
 
+#define STB_IMAGE_IMPLEMENTATION
+#include "stb_image.h"
+
 using namespace std;
 
 float vertices[] = {
-	//位置				//颜色
-	-0.5f, -0.5f, 0.0f, 1.0f, 0.0f, 0.0f,//0
-	0.5f, -0.5f, 0.0f, 0.0f, 1.0f, 0.0f,//1
-	0.0f,  0.5f, 0.0f, 0.0f, 0.0f, 1.0f,//2
-	//0.5f, -0.5f, 0.0f,
-	//0.0f, 0.5f, 0.0f,
-	0.8f,0.8f,0.0f, 1.0f, 0, 1.0f//3
+	//     ---- 位置 ----       ---- 颜色 ----     - 纹理坐标 -
+		 0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // 右上
+		 0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // 右下
+		-0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // 左下
+		-0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f    // 左上
 };
 //0,1,2  2,1,3
 
 //EBO
 unsigned int indices[] = {
 	0, 1, 2, // 第一个三角形
-	2, 1, 3  // 第二个三角形
+	2, 3, 0  // 第二个三角形
 };
 
 void processInput(GLFWwindow* window)
@@ -88,7 +89,7 @@ int main(int argc, char* argv[])
 	glViewport(0, 0, 800, 600);
 
 	//背面剔除
-	glEnable(GL_CULL_FACE);
+	//glEnable(GL_CULL_FACE);
 	glCullFace(GL_BACK);//正面 GL_FRONT
 	//线框模式
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
@@ -119,11 +120,50 @@ int main(int argc, char* argv[])
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
 	//位置
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 	//颜色
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*) (3*sizeof(float)));
+	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*) (3*sizeof(float)));
 	glEnableVertexAttribArray(1);
+	//UV
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+	glEnableVertexAttribArray(2);
+
+	unsigned int TexBufferA;
+	glGenTextures(1, &TexBufferA);
+	glActiveTexture(GL_TEXTURE0);
+	glBindTexture(GL_TEXTURE_2D, TexBufferA);
+
+	stbi_set_flip_vertically_on_load(true);
+	int width, height, nrChannel;
+	unsigned char* data = stbi_load("container.jpg", &width, &height, &nrChannel, 0);
+	if (data)
+	{
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else
+	{
+		printf("load tex failed");
+	}
+	stbi_image_free(data);
+
+	unsigned int TexBufferB;
+	glGenTextures(1, &TexBufferB);
+	glActiveTexture(GL_TEXTURE3);
+	glBindTexture(GL_TEXTURE_2D, TexBufferB);
+	unsigned char* data2 = stbi_load("awesomeface.png", &width, &height, &nrChannel, 0);
+	if (data2)
+	{
+		glTexImage2D(GL_TEXTURE_2D, 0, GL_RGBA, width, height, 0, GL_RGBA, GL_UNSIGNED_BYTE, data2);
+		glGenerateMipmap(GL_TEXTURE_2D);
+	}
+	else
+	{
+		printf("load tex2 failed");
+	}
+	stbi_image_free(data2);
+
 
 	//render loop
 	while (!glfwWindowShouldClose(window))
@@ -135,10 +175,19 @@ int main(int argc, char* argv[])
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT);//COLOR_BUFFER:显示到屏幕上的buffer
 
+		//glBindTexture(GL_TEXTURE_2D, TexBufferA);//第一张texture默认开启，不需要设置uniform
+
+		glActiveTexture(GL_TEXTURE0);
+		glBindTexture(GL_TEXTURE_2D, TexBufferA);
+		glActiveTexture(GL_TEXTURE3);
+		glBindTexture(GL_TEXTURE_2D, TexBufferB);
+
 		glBindVertexArray(VAO);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 
 		myShader->use();
+		glUniform1i(glGetUniformLocation(myShader->ID, "ourTexture"), 0);
+		glUniform1i(glGetUniformLocation(myShader->ID, "ourFaceTexture"), 3);
 
 		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
