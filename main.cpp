@@ -14,11 +14,47 @@
 using namespace std;
 
 float vertices[] = {
-	//     ---- 位置 ----       ---- 颜色 ----     - 纹理坐标 -
-		 0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // 右上
-		 0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // 右下
-		-0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // 左下
-		-0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f    // 左上
+-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+	 0.5f, -0.5f, -0.5f,  1.0f, 0.0f,
+	 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+	 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+	-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+	-0.5f, -0.5f, -0.5f,  0.0f, 0.0f,
+
+	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+	 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+	 0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+	 0.5f,  0.5f,  0.5f,  1.0f, 1.0f,
+	-0.5f,  0.5f,  0.5f,  0.0f, 1.0f,
+	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+
+	-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+	-0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+	-0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+	 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+	 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+	 0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+	 0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+	 0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+	 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+
+	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+	 0.5f, -0.5f, -0.5f,  1.0f, 1.0f,
+	 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+	 0.5f, -0.5f,  0.5f,  1.0f, 0.0f,
+	-0.5f, -0.5f,  0.5f,  0.0f, 0.0f,
+	-0.5f, -0.5f, -0.5f,  0.0f, 1.0f,
+
+	-0.5f,  0.5f, -0.5f,  0.0f, 1.0f,
+	 0.5f,  0.5f, -0.5f,  1.0f, 1.0f,
+	 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+	 0.5f,  0.5f,  0.5f,  1.0f, 0.0f,
+	-0.5f,  0.5f,  0.5f,  0.0f, 0.0f,
+	-0.5f,  0.5f, -0.5f,  0.0f, 1.0f
 };
 //0,1,2  2,1,3
 
@@ -26,6 +62,19 @@ float vertices[] = {
 unsigned int indices[] = {
 	0, 1, 2, // 第一个三角形
 	2, 3, 0  // 第二个三角形
+};
+
+glm::vec3 cubePositions[] = {
+  glm::vec3(0.0f,  0.0f,  0.0f),
+  glm::vec3(2.0f,  5.0f, -15.0f),
+  glm::vec3(-1.5f, -2.2f, -2.5f),
+  glm::vec3(-3.8f, -2.0f, -12.3f),
+  glm::vec3(2.4f, -0.4f, -3.5f),
+  glm::vec3(-1.7f,  3.0f, -7.5f),
+  glm::vec3(1.3f, -2.0f, -2.5f),
+  glm::vec3(1.5f,  2.0f, -2.5f),
+  glm::vec3(1.5f,  0.2f, -1.5f),
+  glm::vec3(-1.3f,  1.0f, -1.5f)
 };
 
 void processInput(GLFWwindow* window)
@@ -39,28 +88,28 @@ void processInput(GLFWwindow* window)
 int main(int argc, char* argv[])
 {
 
-	int index = 1;
-	int index1 = 2;
-	int* i = &index;
-	cout << i << endl;
-	cout << &i << endl;
-	cout << *i << endl;
-	cout << index << endl;
-	cout << &index << endl;
-	*i = index1;
-	cout <<"----------------" << endl;
-	cout << i << endl;
-	cout << &i << endl;
-	cout << *i << endl;
-	cout << index << endl;
-	cout << &index << endl;
-	i = &index1;
-	cout << "----------------" << endl;
-	cout << i << endl;
-	cout << &i << endl;
-	cout << *i << endl;
-	cout << index << endl;
-	cout << &index << endl;
+	//int index = 1;
+	//int index1 = 2;
+	//int* i = &index;
+	//cout << i << endl;
+	//cout << &i << endl;
+	//cout << *i << endl;
+	//cout << index << endl;
+	//cout << &index << endl;
+	//*i = index1;
+	//cout <<"----------------" << endl;
+	//cout << i << endl;
+	//cout << &i << endl;
+	//cout << *i << endl;
+	//cout << index << endl;
+	//cout << &index << endl;
+	//i = &index1;
+	//cout << "----------------" << endl;
+	//cout << i << endl;
+	//cout << &i << endl;
+	//cout << *i << endl;
+	//cout << index << endl;
+	//cout << &index << endl;
 	
 	//cout << &(&vertexShaderSource);
 	glfwInit();
@@ -97,6 +146,8 @@ int main(int argc, char* argv[])
 	glCullFace(GL_BACK);//正面 GL_FRONT
 	//线框模式
 	//glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
+	//ZTest
+	glEnable(GL_DEPTH_TEST);
 
 	//栈
 	//Shader testShader = Shader("vertexSource.txt", "fragmentSource.txt");
@@ -114,7 +165,6 @@ int main(int argc, char* argv[])
 	//默认逆时针绘制顶点
 	unsigned int VBO;
 	glGenBuffers(1, &VBO);
-	cout << VBO << endl;
 	glBindBuffer(GL_ARRAY_BUFFER, VBO);
 	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
@@ -124,13 +174,13 @@ int main(int argc, char* argv[])
 	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
 
 	//位置
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)0);
 	glEnableVertexAttribArray(0);
 	//颜色
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*) (3*sizeof(float)));
-	glEnableVertexAttribArray(1);
+	//glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*) (3*sizeof(float)));
+	//glEnableVertexAttribArray(1);
 	//UV
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
 	glEnableVertexAttribArray(2);
 
 	unsigned int TexBufferA;
@@ -186,19 +236,22 @@ int main(int argc, char* argv[])
 	//trans = glm::rotate(trans, glm::radians(90.0f), glm::vec3(0.0, 0.0, 1.0));
 	//trans = glm::scale(trans, glm::vec3(0.5, 0.5, 0.5));
 
-	trans = glm::translate(trans, glm::vec3(0.5f, -0.5f, 0));
+	glm::mat4 modelMat = glm::mat4(1.0f);
+	modelMat = glm::rotate(modelMat, glm::radians(-55.0f), glm::vec3(1.0f, 0, 0));
+	glm::mat4 viewMat = glm::mat4(1.0f);
+	viewMat = glm::translate(viewMat, glm::vec3(0, 0, -3.0f));
+	glm::mat4 projMat = glm::mat4(1.0f);
+	projMat = glm::perspective(glm::radians(45.0f), 800.0f/600.0f, 0.1f, 100.0f);
 
 	//render loop
 	while (!glfwWindowShouldClose(window))
 	{
-		trans = glm::rotate(trans, (float)glfwGetTime()/1000, glm::vec3(0, 0, 1.0f));
-
 		//在下一帧开始时处理输入
 		processInput(window);
 
 		//render commonder...
 		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
-		glClear(GL_COLOR_BUFFER_BIT);//COLOR_BUFFER:显示到屏幕上的buffer
+		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);//COLOR_BUFFER:显示到屏幕上的buffer
 
 		//glBindTexture(GL_TEXTURE_2D, TexBufferA);//第一张texture默认开启，不需要设置uniform
 
@@ -210,15 +263,42 @@ int main(int argc, char* argv[])
 		glBindVertexArray(VAO);
 		glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, EBO);
 
-		myShader->use();
 
-		//传递Uniform数据给GPU
-		glUniform1i(glGetUniformLocation(myShader->ID, "ourTexture"), 0);
-		glUniform1i(glGetUniformLocation(myShader->ID, "ourFaceTexture"), 3);
-		glUniformMatrix4fv(glGetUniformLocation(myShader->ID, "transform"),1, GL_FALSE, glm::value_ptr(trans));
 
-		glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+		for (int i = 0; i < 10; i++)
+		{
+			glm::mat4 modelRandomMat = glm::mat4(1.0f);
+			modelRandomMat = glm::translate(modelRandomMat, cubePositions[i]);
 
+			myShader->use();
+
+			//传递Uniform数据给GPU
+			glUniform1i(glGetUniformLocation(myShader->ID, "ourTexture"), 0);
+			glUniform1i(glGetUniformLocation(myShader->ID, "ourFaceTexture"), 3);
+			//glUniformMatrix4fv(glGetUniformLocation(myShader->ID, "transform"),1, GL_FALSE, glm::value_ptr(trans));
+
+			//一个一个Draw
+			//glUniformMatrix4fv(glGetUniformLocation(myShader->ID, "modelMat"), 1, GL_FALSE, glm::value_ptr(modelRandomMat));
+
+			//GPU Instancing
+				glm::mat4 modelInstanceMat = glm::mat4(1.0f);
+				modelInstanceMat = glm::translate(modelInstanceMat, cubePositions[i]);
+				string index = std::to_string(i);
+				GLint location = glGetUniformLocation(myShader->ID, ("instanceModelMat[" + index + "]").c_str());
+				glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(modelInstanceMat));
+
+			glUniformMatrix4fv(glGetUniformLocation(myShader->ID, "viewMat"), 1, GL_FALSE, glm::value_ptr(viewMat));
+			glUniformMatrix4fv(glGetUniformLocation(myShader->ID, "projMat"),1, GL_FALSE, glm::value_ptr(projMat));
+
+			//DrawCall
+			//glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+			//一个一个Draw
+			//glDrawArrays(GL_TRIANGLES, 0, 36);
+		}
+
+		//GPU Instancing
+		glDrawArraysInstanced(GL_TRIANGLES, 0, 36, 10);
 
 		//call event ，交换Buffer
 		glfwPollEvents();
