@@ -1,15 +1,15 @@
 #version 330 core
 //in vec4 vertexColor;
-in vec2 TexCoord;
 in float TestID;
 in vec3 FragPos;
 in vec3 Normal;
+in vec2 TexCoord;
 
 struct Material
 {
 	vec3 ambient;
-	vec3 diffuse;
-	vec3 specular;
+	sampler2D diffuse;
+	sampler2D specular;
 	float shininess;
 
 };
@@ -40,12 +40,13 @@ void main()
 
 	//specular
 	float specularAmount = pow(max(dot(reflectVec, cameraVec), 0), material.shininess);
-	vec3 specular = material.specular * specularAmount * lightColor;
+	vec3 specular = texture(material.specular, TexCoord).rgb * specularAmount * lightColor;
 	
 	//diffuse
-	vec3 diffuse = material.diffuse * max(dot(lightDir, Normal), 0)* lightColor;
+	//vec3 diffuse = material.diffuse * max(dot(lightDir, Normal), 0)* lightColor;
+	vec3 diffuse = texture(material.diffuse, TexCoord).rgb * max(dot(lightDir, Normal), 0)* lightColor;
 
 	//ambient
-	vec3 ambient = material.ambient * ambientColor;
+	vec3 ambient = texture(material.diffuse, TexCoord).rgb * ambientColor;
 	FragColor = vec4((ambient + diffuse + specular) * objColor,1.0);
 }
