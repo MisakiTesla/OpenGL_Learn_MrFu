@@ -3,6 +3,7 @@
 #include <GL/glew.h>
 #include <GLFW/glfw3.h>//<xxx> -> 系统库
 #include "Shader.h"//”xxx“ -> 自定义库
+#include "Material.h"
 
 #include <glm.hpp>
 #include <gtc/matrix_transform.hpp>
@@ -216,6 +217,15 @@ int main(int argc, char* argv[])
 	//testShader->test();
 #pragma endregion
 
+#pragma region Init Shader Program
+	Material* myMaterial = new Material(
+		myShader,
+		glm::vec3(0.0f, 1.0f, 1.0f),
+		glm::vec3(1.0f, 1.0f, 1.0f),
+		glm::vec3(1.0f, 1.0f, 1.0f),
+		32.0f);
+#pragma endregion
+
 #pragma region Init and load Models to VAO,VBO
 	unsigned int VAO;
 	glGenVertexArrays(1, &VAO);
@@ -306,6 +316,12 @@ int main(int argc, char* argv[])
 			glUniform3f(glGetUniformLocation(myShader->ID, "lightPos"), 1.0f, 1.0f, 1.0f);
 			glUniform3f(glGetUniformLocation(myShader->ID, "lightColor"), 1.0f, 1.0f, 1.0f);
 			glUniform3f(glGetUniformLocation(myShader->ID, "cameraPos"), camera.Position.x, camera.Position.y, camera.Position.z);
+
+			myMaterial->shader->SetUniform3f("material.ambient", myMaterial->ambient);
+			myMaterial->shader->SetUniform3f("material.diffuse", myMaterial->diffuse);
+			myMaterial->shader->SetUniform3f("material.specular", myMaterial->specular);
+			myMaterial->shader->SetUniform1f("material.shininess", myMaterial->shininess);
+
 			//Set Model
 			glBindVertexArray(VAO);
 

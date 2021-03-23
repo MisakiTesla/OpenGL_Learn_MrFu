@@ -25,7 +25,7 @@ void main()
 	//FragPos = (modelMat * vec4(aPos.xyz, 1.0)).xyz;
 	FragPos = (instanceModelMat[gl_InstanceID] * vec4(aPos.xyz, 1.0)).xyz;
 	//Normal = mat3(instanceModelMat[gl_InstanceID]) * aNormal;
-	//求切线空间法线
+	//使用原来变换矩阵的逆转置矩阵得到正确的世界空间法线
 	Normal = mat3(transpose(inverse(instanceModelMat[gl_InstanceID]))) * aNormal;
 
 	//vertexColor = vec4(aColor.x, aColor.y, aColor.z, 1.0);
