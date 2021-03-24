@@ -14,9 +14,9 @@ LightSpot::~LightSpot()
 
 void LightSpot::UpdateDirection()
 {
-	direction = glm::vec3(0, 0, 1.0f);//pointing to z(forward)
-	direction = glm::rotateZ(direction, angles.z);
-	direction = glm::rotateX(direction, angles.x);
-	direction = glm::rotateY(direction, angles.y);
-	direction = -1.0f * direction;
+	lightDir = glm::vec3(0, 0, 1.0f);//pointing to z(forward)
+	lightDir = glm::rotateZ(lightDir, angles.z);
+	lightDir = glm::rotateX(lightDir, angles.x);
+	lightDir = glm::rotateY(lightDir, angles.y);
+	lightDir = -1.0f * lightDir;
 }

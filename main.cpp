@@ -87,9 +87,48 @@ Camera camera(glm::vec3(0, 0, 3.0f), glm::radians(15.0f), glm::radians(180.0f), 
 
 #pragma region Light Declare
 //Instantiate Light Class
-//LightDirectional light(glm::vec3(10.0f, 10.0, -5.0f), glm::vec3(glm::radians(45.0f), glm::radians(45.0f), 0), glm::vec3(1.0f, 0, 0));
-//LightPoint light(glm::vec3(1.0f, 1.0, -1.0f), glm::vec3(glm::radians(45.0f), glm::radians(45.0f), 0), glm::vec3(10.0f, 10.0f, 10.0f));
-LightSpot light(glm::vec3(0.0f, 4.0f, 0.0f), glm::vec3(glm::radians(90.0f), 0, 0), glm::vec3(1.0f, 1.0f, 1.0f));
+LightDirectional lightD = LightDirectional(
+	glm::vec3(1.0f, 1.0f, -1.0f),
+	glm::vec3(glm::radians(90.0f), glm::radians(0.0f), 0),
+	glm::vec3(1.0f, 1.0f, 1.0f));
+//LightPoint lightP0 = LightPoint(
+//	glm::vec3(1.0f, 0, 0),
+//	glm::vec3(glm::radians(45.0), glm::radians(45.0), 0),
+//	glm::vec3(1.0f, 0, 0));
+//LightPoint lightP1 = LightPoint(
+//	glm::vec3(0, 1.0f, 0),
+//	glm::vec3(glm::radians(45.0), glm::radians(45.0), 0),
+//	glm::vec3(0, 1.0f, 0));
+//LightPoint lightP2 = LightPoint(
+//	glm::vec3(0, 0, 1.0f),
+//	glm::vec3(glm::radians(45.0), glm::radians(45.0), 0),
+//	glm::vec3(0, 0, 1.0f));
+//LightPoint lightP3 = LightPoint(
+//	glm::vec3(1.0f, 1.0f, 1.0f),
+//	glm::vec3(glm::radians(45.0), glm::radians(45.0), 0),
+//	glm::vec3(1.0f, 1.0f, 1.0f));
+LightPoint lightPs[4]{  
+	LightPoint(
+	glm::vec3(1.0f, 0, 0),
+	glm::vec3(glm::radians(45.0), glm::radians(45.0), 0),
+	glm::vec3(1.0f, 0, 0)),
+	LightPoint(
+	glm::vec3(0, 1.0f, 0),
+	glm::vec3(glm::radians(45.0), glm::radians(45.0), 0),
+	glm::vec3(0, 1.0f, 0)),
+	LightPoint(
+	glm::vec3(0, 0, 1.0f),
+	glm::vec3(glm::radians(45.0), glm::radians(45.0), 0),
+	glm::vec3(0, 0, 1.0f)),
+	LightPoint(
+	glm::vec3(1.0f, 1.0f, 1.0f),
+	glm::vec3(glm::radians(45.0), glm::radians(45.0), 0),
+	glm::vec3(1.0f, 1.0f, 1.0f)) };
+
+LightSpot lightS(
+	glm::vec3(0, 8.0f, 0),
+	glm::vec3(glm::radians(90.0), glm::radians(0.0f), 0),
+	glm::vec3(1.0f, 1.0f, 1.0f));
 #pragma endregion
 
 #pragma region Input Declare
@@ -285,7 +324,7 @@ int main(int argc, char* argv[])
 		processInput(window);
 
 		//清屏
-		glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+		glClearColor(0, 0, 0, 1.0f);
 		glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);//COLOR_BUFFER:显示到屏幕上的buffer
 
 
@@ -324,16 +363,33 @@ int main(int argc, char* argv[])
 			glUniformMatrix4fv(glGetUniformLocation(myShader->ID, "projMat"),1, GL_FALSE, glm::value_ptr(projMat));
 			glUniform3f(glGetUniformLocation(myShader->ID, "objColor"), 1.0f, 1.0f, 1.0f);
 			glUniform3f(glGetUniformLocation(myShader->ID, "ambientColor"), 0.1f, 0.1f, 0.1f);
-			myMaterial->shader->SetUniform3f("lightPos", light.position);
-			myMaterial->shader->SetUniform3f("lightColor", light.color);
-			myMaterial->shader->SetUniform3f("lightDirUniform", light.direction);
-			//myMaterial->shader->SetUniform1f("lightPoint.constant", light.constant);
-			//myMaterial->shader->SetUniform1f("lightPoint.linear", light.linear);
-			//myMaterial->shader->SetUniform1f("lightPoint.quadratic", light.quadratic);
-			myMaterial->shader->SetUniform1f("lightSpot.cosPhyInner", light.cosPhyInner);
-			myMaterial->shader->SetUniform1f("lightSpot.cosPhyOutter", light.cosPhyOutter);
 
 			glUniform3f(glGetUniformLocation(myShader->ID, "cameraPos"), camera.Position.x, camera.Position.y, camera.Position.z);
+
+			myMaterial->shader->SetUniform3f("lightD.pos", lightD.position);
+			myMaterial->shader->SetUniform3f("lightD.color", lightD.color);
+			myMaterial->shader->SetUniform3f("lightD.dirToLight", lightD.lightDir);
+
+			for (int j = 0; j < 4; j++)
+			{
+				string lightIndex = std::to_string(j);
+				myMaterial->shader->SetUniform3f(("lightP" + lightIndex +".pos").c_str(), lightPs[j].position);
+				myMaterial->shader->SetUniform3f(("lightP" + lightIndex + ".color").c_str(), lightPs[j].color);
+				myMaterial->shader->SetUniform3f(("lightP" + lightIndex + ".dirToLight").c_str(), lightPs[j].lightDir);
+				myMaterial->shader->SetUniform1f(("lightP" + lightIndex + ".constant").c_str(), lightPs[j].constant);
+				myMaterial->shader->SetUniform1f(("lightP" + lightIndex + ".linear").c_str(), lightPs[j].linear);
+				myMaterial->shader->SetUniform1f(("lightP" + lightIndex + ".quadratic").c_str(), lightPs[j].quadratic);
+			}
+
+			myMaterial->shader->SetUniform3f("lightS.pos", lightS.position);
+			myMaterial->shader->SetUniform3f("lightS.color", lightS.color);
+			myMaterial->shader->SetUniform3f("lightS.dirToLight", lightS.lightDir);
+			myMaterial->shader->SetUniform1f("lightS.constant", lightS.constant);
+			myMaterial->shader->SetUniform1f("lightS.linear", lightS.linear);
+			myMaterial->shader->SetUniform1f("lightS.quadratic", lightS.quadratic);
+			myMaterial->shader->SetUniform1f("lightS.cosPhyInner", lightS.cosPhyInner);
+			myMaterial->shader->SetUniform1f("lightS.cosPhyOutter", lightS.cosPhyOutter);
+
 
 			myMaterial->shader->SetUniform3f("material.ambient", myMaterial->ambient);
 			//myMaterial->shader->SetUniform3f("material.diffuse", myMaterial->diffuse);
