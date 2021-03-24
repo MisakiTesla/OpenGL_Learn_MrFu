@@ -6,6 +6,7 @@
 #include "Material.h"
 #include "LightDirectional.h"
 #include "LightPoint.h"
+#include "LightSpot.h"
 
 #include <glm.hpp>
 #include <gtc/matrix_transform.hpp>
@@ -87,7 +88,8 @@ Camera camera(glm::vec3(0, 0, 3.0f), glm::radians(15.0f), glm::radians(180.0f), 
 #pragma region Light Declare
 //Instantiate Light Class
 //LightDirectional light(glm::vec3(10.0f, 10.0, -5.0f), glm::vec3(glm::radians(45.0f), glm::radians(45.0f), 0), glm::vec3(1.0f, 0, 0));
-LightPoint light(glm::vec3(1.0f, 1.0, -1.0f), glm::vec3(glm::radians(45.0f), glm::radians(45.0f), 0), glm::vec3(10.0f, 10.0f, 10.0f));
+//LightPoint light(glm::vec3(1.0f, 1.0, -1.0f), glm::vec3(glm::radians(45.0f), glm::radians(45.0f), 0), glm::vec3(10.0f, 10.0f, 10.0f));
+LightSpot light(glm::vec3(0.0f, 4.0f, 0.0f), glm::vec3(glm::radians(90.0f), 0, 0), glm::vec3(1.0f, 1.0f, 1.0f));
 #pragma endregion
 
 #pragma region Input Declare
@@ -325,9 +327,11 @@ int main(int argc, char* argv[])
 			myMaterial->shader->SetUniform3f("lightPos", light.position);
 			myMaterial->shader->SetUniform3f("lightColor", light.color);
 			myMaterial->shader->SetUniform3f("lightDirUniform", light.direction);
-			myMaterial->shader->SetUniform1f("lightPoint.constant", light.constant);
-			myMaterial->shader->SetUniform1f("lightPoint.linear", light.linear);
-			myMaterial->shader->SetUniform1f("lightPoint.quadratic", light.quadratic);
+			//myMaterial->shader->SetUniform1f("lightPoint.constant", light.constant);
+			//myMaterial->shader->SetUniform1f("lightPoint.linear", light.linear);
+			//myMaterial->shader->SetUniform1f("lightPoint.quadratic", light.quadratic);
+			myMaterial->shader->SetUniform1f("lightSpot.cosPhyInner", light.cosPhyInner);
+			myMaterial->shader->SetUniform1f("lightSpot.cosPhyOutter", light.cosPhyOutter);
 
 			glUniform3f(glGetUniformLocation(myShader->ID, "cameraPos"), camera.Position.x, camera.Position.y, camera.Position.z);
 
