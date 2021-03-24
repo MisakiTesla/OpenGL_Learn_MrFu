@@ -4,6 +4,7 @@
 #include <GLFW/glfw3.h>//<xxx> -> 系统库
 #include "Shader.h"//”xxx“ -> 自定义库
 #include "Material.h"
+#include "LightDirectional.h"
 
 #include <glm.hpp>
 #include <gtc/matrix_transform.hpp>
@@ -80,6 +81,11 @@ glm::vec3 cubePositions[] = {
 //Instantiate Camera Class
 //Camera camera(glm::vec3(0, 0, 3.0f), glm::vec3(0, -1.0f, 0), glm::vec3(0, 1.0f, 0));
 Camera camera(glm::vec3(0, 0, 3.0f), glm::radians(15.0f), glm::radians(180.0f), glm::vec3(0, 1.0f, 0));
+#pragma endregion
+
+#pragma region Light Declare
+//Instantiate Light Class
+LightDirectional light(glm::vec3(10.0f, 10.0, -5.0f), glm::vec3(glm::radians(45.0f), glm::radians(45.0f), 0), glm::vec3(1.0f, 0, 0));
 #pragma endregion
 
 #pragma region Input Declare
@@ -314,8 +320,9 @@ int main(int argc, char* argv[])
 			glUniformMatrix4fv(glGetUniformLocation(myShader->ID, "projMat"),1, GL_FALSE, glm::value_ptr(projMat));
 			glUniform3f(glGetUniformLocation(myShader->ID, "objColor"), 1.0f, 1.0f, 1.0f);
 			glUniform3f(glGetUniformLocation(myShader->ID, "ambientColor"), 0.3f, 0.3f, 0.3f);
-			glUniform3f(glGetUniformLocation(myShader->ID, "lightPos"), 10.0f, 10.0f, -5.0f);
-			glUniform3f(glGetUniformLocation(myShader->ID, "lightColor"), 1.0f, 1.0f, 1.0f);
+			//myMaterial->shader->SetUniform3f("lightPos", light.position);
+			myMaterial->shader->SetUniform3f("lightColor", light.color);
+			myMaterial->shader->SetUniform3f("lightDir", light.direction);
 			glUniform3f(glGetUniformLocation(myShader->ID, "cameraPos"), camera.Position.x, camera.Position.y, camera.Position.z);
 
 			myMaterial->shader->SetUniform3f("material.ambient", myMaterial->ambient);

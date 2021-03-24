@@ -21,6 +21,7 @@ uniform sampler2D ourFaceTexture;
 uniform vec3 objColor;
 uniform vec3 ambientColor;
 uniform vec3 lightPos;
+uniform vec3 lightDir;
 uniform vec3 lightColor;
 uniform vec3 cameraPos;
 
@@ -34,7 +35,7 @@ void main()
 	//FragColor = vec4(objColor * ambientColor,1.0) * texture(ourTexture, TexCoord) * texture(ourFaceTexture, TexCoord);
 	
 
-	vec3 lightDir = normalize(lightPos - FragPos);
+	//vec3 lightDir = normalize(lightPos - FragPos);
 	vec3 reflectVec = reflect(-lightDir, Normal);
 	vec3 cameraVec = normalize(cameraPos- FragPos);
 
