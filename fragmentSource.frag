@@ -11,17 +11,23 @@ struct Material
 	sampler2D diffuse;
 	sampler2D specular;
 	float shininess;
-
 };
 
+struct LightPoint
+{
+	float constant;
+	float linear;
+	float quadratic;
+};
 
 uniform Material material;
+uniform LightPoint lightPoint;
 uniform sampler2D ourTexture;
 uniform sampler2D ourFaceTexture;
 uniform vec3 objColor;
 uniform vec3 ambientColor;
 uniform vec3 lightPos;
-uniform vec3 lightDir;
+uniform vec3 lightDirUniform;//Æ½ÐÐ¹â
 uniform vec3 lightColor;
 uniform vec3 cameraPos;
 
@@ -33,9 +39,10 @@ void main()
 	//FragColor = vertexColor;
 	//FragColor = texture(ourTexture, TexCoord) * texture(ourFaceTexture, TexCoord) * TestID /10;//GPU Instancing
 	//FragColor = vec4(objColor * ambientColor,1.0) * texture(ourTexture, TexCoord) * texture(ourFaceTexture, TexCoord);
-	
+	float dist = length(lightPos - FragPos);
+	float attenuation = 1.0f / (lightPoint.constant + lightPoint.linear * dist + lightPoint.quadratic * (dist * dist));
 
-	//vec3 lightDir = normalize(lightPos - FragPos);
+	vec3 lightDir = normalize(lightPos - FragPos);
 	vec3 reflectVec = reflect(-lightDir, Normal);
 	vec3 cameraVec = normalize(cameraPos- FragPos);
 
@@ -49,5 +56,5 @@ void main()
 
 	//ambient
 	vec3 ambient = texture(material.diffuse, TexCoord).rgb * ambientColor;
-	FragColor = vec4((ambient + diffuse + specular) * objColor,1.0);
+	FragColor = vec4((ambient + (diffuse + specular) * attenuation) * objColor,1.0);
 }
