@@ -16,6 +16,7 @@
 #include "stb_image.h"
 #include "Camera.h"
 #include "main.h"
+#include "Mesh.h"
 
 using namespace std;
 
@@ -277,27 +278,28 @@ int main(int argc, char* argv[])
 #pragma endregion
 
 #pragma region Init and load Models to VAO,VBO
-	unsigned int VAO;
-	glGenVertexArrays(1, &VAO);
-	glBindVertexArray(VAO);
-	//默认逆时针绘制顶点
-	unsigned int VBO;
-	glGenBuffers(1, &VBO);
-	glBindBuffer(GL_ARRAY_BUFFER, VBO);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+	Mesh cube(vertices);
+	//unsigned int VAO;
+	//glGenVertexArrays(1, &VAO);
+	//glBindVertexArray(VAO);
+	////默认逆时针绘制顶点
+	//unsigned int VBO;
+	//glGenBuffers(1, &VBO);
+	//glBindBuffer(GL_ARRAY_BUFFER, VBO);
+	//glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
-	//顶点位置
-	glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
-	glEnableVertexAttribArray(0);
-	//Normal
-	glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*) (3*sizeof(float)));
-	glEnableVertexAttribArray(1);
-	//UV
-	glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
-	glEnableVertexAttribArray(2);
+	////顶点位置
+	//glVertexAttribPointer(0, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)0);
+	//glEnableVertexAttribArray(0); 
+	////Normal
+	//glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*) (3*sizeof(float)));
+	//glEnableVertexAttribArray(1);
+	////UV
+	//glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+	//glEnableVertexAttribArray(2);
 
-	//glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
-	//glEnableVertexAttribArray(3);
+	////glVertexAttribPointer(3, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
+	////glEnableVertexAttribArray(3);
 #pragma endregion
 
 #pragma region Init and load Textures
@@ -348,16 +350,18 @@ int main(int argc, char* argv[])
 			//glBindTexture(GL_TEXTURE_2D, myMaterial->specular);
 
 			//Set Material -> Uniforms 传递Uniform数据给GPU
-			glUniform1i(glGetUniformLocation(myShader->ID, "ourTexture"), 0);
-			glUniform1i(glGetUniformLocation(myShader->ID, "ourFaceTexture"), 3);
+			//glUniform1i(glGetUniformLocation(myShader->ID, "ourTexture"), 0);
+			//glUniform1i(glGetUniformLocation(myShader->ID, "ourFaceTexture"), 3);
 			//一个一个Draw
-			//glUniformMatrix4fv(glGetUniformLocation(myShader->ID, "modelMat"), 1, GL_FALSE, glm::value_ptr(modelMat));
-			//GPU Instancing
-			glm::mat4 modelInstanceMat = glm::mat4(1.0f);
-			modelInstanceMat = glm::translate(modelInstanceMat, cubePositions[i]);
-			string index = std::to_string(i);
-			GLint location = glGetUniformLocation(myShader->ID, ("instanceModelMat[" + index + "]").c_str());
-			glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(modelInstanceMat));
+			glUniformMatrix4fv(glGetUniformLocation(myShader->ID, "modelMat"), 1, GL_FALSE, glm::value_ptr(modelMat));
+			
+#pragma region GPU Instancing
+			//glm::mat4 modelInstanceMat = glm::mat4(1.0f);
+			//modelInstanceMat = glm::translate(modelInstanceMat, cubePositions[i]);
+			//string index = std::to_string(i);
+			//GLint location = glGetUniformLocation(myShader->ID, ("instanceModelMat[" + index + "]").c_str());
+			//glUniformMatrix4fv(location, 1, GL_FALSE, glm::value_ptr(modelInstanceMat));
+#pragma endregion
 
 			glUniformMatrix4fv(glGetUniformLocation(myShader->ID, "viewMat"), 1, GL_FALSE, glm::value_ptr(viewMat));
 			glUniformMatrix4fv(glGetUniformLocation(myShader->ID, "projMat"),1, GL_FALSE, glm::value_ptr(projMat));
@@ -392,21 +396,21 @@ int main(int argc, char* argv[])
 
 
 			myMaterial->shader->SetUniform3f("material.ambient", myMaterial->ambient);
-			//myMaterial->shader->SetUniform3f("material.diffuse", myMaterial->diffuse);
 			myMaterial->shader->SetUniform1i("material.diffuse", Shader::DIFFUSE);
-			//myMaterial->shader->SetUniform3f("material.specular", myMaterial->specular);
 			myMaterial->shader->SetUniform1i("material.specular", Shader::SPECULAR);
 			myMaterial->shader->SetUniform1f("material.shininess", myMaterial->shininess);
 
 			//Set Model
-			glBindVertexArray(VAO);
+			//glBindVertexArray(VAO);
 
 			//DrawCall 一个一个Draw
 			//glDrawArrays(GL_TRIANGLES, 0, 36);
+			cube.Draw(myMaterial->shader);
 		}
 
 		//DrawCall GPU Instancing
-		glDrawArraysInstanced(GL_TRIANGLES, 0, 36, 10);
+		//glDrawArraysInstanced(GL_TRIANGLES, 0, 36, 10);
+		//glDrawArraysInstanced(GL_TRIANGLES, 0, 36, 10);
 
 		//Clean up, prepare for next render loop event 交换Buffer
 		glfwSwapBuffers(window);

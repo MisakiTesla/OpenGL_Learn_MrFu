@@ -19,14 +19,14 @@ out vec2 TexCoord;
 
 void main()
 {
-	//gl_Position = projMat * viewMat * modelMat * vec4(aPos.x, aPos.y, aPos.z, 1.0); //最后一位齐次坐标 -> 1-标量，0-向量
-	gl_Position = projMat * viewMat * instanceModelMat[gl_InstanceID] * vec4(aPos.xyz, 1.0); //最后一位齐次坐标 -> 1-标量，0-向量
-	//Normal = mat3(modelMat) * aNormal;
-	//FragPos = (modelMat * vec4(aPos.xyz, 1.0)).xyz;
-	FragPos = (instanceModelMat[gl_InstanceID] * vec4(aPos.xyz, 1.0)).xyz;
+	gl_Position = projMat * viewMat * modelMat * vec4(aPos.x, aPos.y, aPos.z, 1.0); //最后一位齐次坐标 -> 1-标量，0-向量
+//	gl_Position = projMat * viewMat * instanceModelMat[gl_InstanceID] * vec4(aPos.xyz, 1.0); //最后一位齐次坐标 -> 1-标量，0-向量
+	FragPos = (modelMat * vec4(aPos.xyz, 1.0)).xyz;
+//	FragPos = (instanceModelMat[gl_InstanceID] * vec4(aPos.xyz, 1.0)).xyz;
 	//Normal = mat3(instanceModelMat[gl_InstanceID]) * aNormal;
+	Normal = mat3(transpose(inverse(mat3(modelMat)))) * aNormal;
 	//使用原来变换矩阵的逆转置矩阵得到正确的世界空间法线
-	Normal = mat3(transpose(inverse(instanceModelMat[gl_InstanceID]))) * aNormal;
+//	Normal = mat3(transpose(inverse(instanceModelMat[gl_InstanceID]))) * aNormal;
 
 	//vertexColor = vec4(aColor.x, aColor.y, aColor.z, 1.0);
 	TexCoord = aTexCoord;
