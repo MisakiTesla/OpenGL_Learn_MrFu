@@ -17,6 +17,7 @@
 #include "Camera.h"
 #include "main.h"
 #include "Mesh.h"
+#include "Model.h"
 
 using namespace std;
 
@@ -198,7 +199,7 @@ void mouse_callback(GLFWwindow* window, double xPos, double yPos)
 	lastY = yPos;
 
 	camera.ProcessMouseMovement(deltaX, deltaY);
-	printf("%f \n", deltaX);
+	//printf("%f \n", deltaX);
 }
 #pragma endregion
 
@@ -226,6 +227,8 @@ unsigned int LoadTextureToGPU(const char* filename, GLint internalFormat, GLenum
 
 int main(int argc, char* argv[])
 {
+	std::string exePath = argv[0];
+	//std::cout << exePath.substr(0, exePath.find_last_of('\\')) + "\\model\\nanosuit.obj" << std::endl;
 #pragma region Open a Window
 	glfwInit();
 	glfwWindowHint(GLFW_CONTEXT_VERSION_MAJOR, 3);
@@ -278,7 +281,8 @@ int main(int argc, char* argv[])
 #pragma endregion
 
 #pragma region Init and load Models to VAO,VBO
-	Mesh cube(vertices);
+	//Mesh cube(vertices);
+	Model model(exePath.substr(0, exePath.find_last_of('\\')) + "\\model\\nanosuit.obj");
 	//unsigned int VAO;
 	//glGenVertexArrays(1, &VAO);
 	//glBindVertexArray(VAO);
@@ -332,7 +336,7 @@ int main(int argc, char* argv[])
 
 		viewMat = camera.GetViewMatrix();
 
-		for (int i = 0; i < 10; i++)
+		for (int i = 0; i < 1; i++)
 		{
 			//Set Model matrix
 			modelMat = glm::translate(glm::mat4(1.0f), cubePositions[i]);
@@ -405,7 +409,8 @@ int main(int argc, char* argv[])
 
 			//DrawCall 一个一个Draw
 			//glDrawArrays(GL_TRIANGLES, 0, 36);
-			cube.Draw(myMaterial->shader);
+			//cube.Draw(myMaterial->shader);
+			model.Draw(myMaterial->shader);
 		}
 
 		//DrawCall GPU Instancing
